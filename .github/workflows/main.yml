@@ -31,10 +31,12 @@ jobs:
         run: |
           cl /EHsc /std:c++17 /O2 /I "SFML-2.6.1\include" main.cpp /link /SUBSYSTEM:WINDOWS /LIBPATH:"SFML-2.6.1\lib" sfml-graphics.lib sfml-window.lib sfml-system.lib sfml-main.lib /OUT:PixelStudio.exe
 
-      - name: Copy SFML DLLs
+      - name: Copy ONLY needed SFML DLLs
         shell: pwsh
         run: |
-          Copy-Item SFML-2.6.1\bin\*.dll .
+          Copy-Item SFML-2.6.1\bin\sfml-graphics-2.dll .
+          Copy-Item SFML-2.6.1\bin\sfml-window-2.dll .
+          Copy-Item SFML-2.6.1\bin\sfml-system-2.dll .
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
