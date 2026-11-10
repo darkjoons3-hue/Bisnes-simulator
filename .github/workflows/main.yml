@@ -1,0 +1,46 @@
+name: Build PixelStudio EXE
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Download SFML 2.6.1 (VC17, 64-bit)
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://www.sfml-dev.org/files/SFML-2.6.1-windows-vc17-64-bit.zip" -OutFile sfml.zip
+          Expand-Archive sfml.zip -DestinationPath .
+
+      - name: Download JetBrains Mono font
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/JetBrains/JetBrainsMono/raw/master/fonts/ttf/JetBrainsMono-Regular.ttf" -OutFile JetBrainsMono-Regular.ttf
+
+      - name: Compile
+        shell: cmd
+        run: |
+          cl /EHsc /std:c++17 /O2 /I "SFML-2.6.1\include" main.cpp /link /SUBSYSTEM:WINDOWS /LIBPATH:"SFML-2.6.1\lib" sfml-graphics.lib sfml-window.lib sfml-system.lib sfml-main.lib /OUT:PixelStudio.exe
+
+      - name: Copy SFML DLLs
+        shell: pwsh
+        run: |
+          Copy-Item SFML-2.6.1\bin\*.dll .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PixelStudio-Windows
+          path: |
+            PixelStudio.exe
+            *.dll
+            JetBrainsMono-Regular.ttf
