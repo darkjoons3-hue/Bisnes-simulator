@@ -1,4 +1,4 @@
-name: Build PixelStudio EXE
+name: Build Game EXE
 
 on:
   push:
@@ -26,10 +26,10 @@ jobs:
         run: |
           Invoke-WebRequest -Uri "https://github.com/JetBrains/JetBrainsMono/raw/master/fonts/ttf/JetBrainsMono-Regular.ttf" -OutFile JetBrainsMono-Regular.ttf
 
-      - name: Compile
+      - name: Compile (All CPP files)
         shell: cmd
         run: |
-          cl /EHsc /std:c++17 /O2 /I "SFML-2.6.1\include" main.cpp /link /SUBSYSTEM:WINDOWS /LIBPATH:"SFML-2.6.1\lib" sfml-graphics.lib sfml-window.lib sfml-system.lib sfml-main.lib /OUT:PixelStudio.exe
+          cl /EHsc /std:c++17 /O2 /I "SFML-2.6.1\include" *.cpp /link /SUBSYSTEM:WINDOWS /LIBPATH:"SFML-2.6.1\lib" sfml-graphics.lib sfml-window.lib sfml-system.lib sfml-main.lib /OUT:Game.exe
 
       - name: Copy ONLY needed SFML DLLs
         shell: pwsh
@@ -41,8 +41,8 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: PixelStudio-Windows
+          name: Game-Windows
           path: |
-            PixelStudio.exe
+            Game.exe
             *.dll
             JetBrainsMono-Regular.ttf
